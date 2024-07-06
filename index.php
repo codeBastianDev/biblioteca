@@ -42,7 +42,7 @@ if (isset($_GET['success'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Futuro</title>
-    <link rel="stylesheet" href="LoginCs.css">
+    <link rel="stylesheet" href="SRC/public/css/LoginCs.css">
 </head>
 <body>
     <div class="formulario">
