@@ -1,21 +1,5 @@
 <?php include('./layout/header.php') ?>
 
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alquiler de Libros</title>
-
-</head>
-
-<body>
-  <header class="bg-dark text-white p-3 mb-3 d-flex justify-content-between align-items-center">
-    <h1>Alquiler de Libros</h1>
-    <button id="cart-button" class="btn btn-link text-white">
-      <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Carrito" class="cart-icon mr-2">
-      Carrito: <span id="cart-count">0</span>
-    </button>
-  </header>
   <main class="container">
     <div class="row">
       <div class="col-md-3">
