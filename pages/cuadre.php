@@ -2,7 +2,6 @@
 session_start();
 $modulo = "Listado de cuadre";
 include_once ("../class/helper.php");  
-$permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET({$_SESSION['id']},modificar) and id = 7");
 ?>
 <!DOCTYPE html>
 <html lang="en">
