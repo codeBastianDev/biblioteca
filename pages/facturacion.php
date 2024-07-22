@@ -2,7 +2,7 @@
 $modulo = "Listado de factura";
 include_once("../class/helper.php");
 session_start();
-$permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET({$_SESSION['id']},permiso) and id = 4");
+
 
 ?>
 <!DOCTYPE html>
@@ -14,7 +14,7 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../assets/img/logo_trasparente.png">
   <title>
-    Colegio Abraham
+  Biblioteca Plus
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -52,9 +52,7 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
                 <div class="col-2">
                   <label for="categoria" name="estado" class="form-control-label">Año escolar</label>
                   <select id="categoria" class="form-control filtro" filtro='i__id_anio' onchange="filtro(event)">
-                    <?php foreach ((new db('anio'))->cargar(0,array('estado = 1'),'ORDER BY apertura desc,id desc') as $fl) {
-                      echo " <option value='{$fl['id']}'>{$fl['nombre']}</option>";
-                    } ?>
+                    
                   </select>
                 </div>
                 <div class="col-2">
@@ -147,21 +145,21 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
       }
     })
 
-    fetch('../controller/listFacturacion.php', {
-        method: 'POST',
-        body: formulario
-      })
-      .then(r => r.text())
-      .then(datos => {
-        document.getElementById('contenedor-principal').innerHTML = `${datos}`;
-      });
-  }
+  //   fetch('../controller/listFacturacion.php', {
+  //       method: 'POST',
+  //       body: formulario
+  //     })
+  //     .then(r => r.text())
+  //     .then(datos => {
+  //       document.getElementById('contenedor-principal').innerHTML = `${datos}`;
+  //     });
+  // }
 
 
-  fetch('../controller/listFacturacion.php')
-    .then(resul => resul.text())
-    .then(r => {
+  // fetch('../controller/listFacturacion.php')
+  //   .then(resul => resul.text())
+  //   .then(r => {
 
-      document.getElementById('contenedor-principal').innerHTML = `${r}`;
-    });
+  //     document.getElementById('contenedor-principal').innerHTML = `${r}`;
+  //   });
 </script>

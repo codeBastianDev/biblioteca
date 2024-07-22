@@ -12,7 +12,7 @@ include_once ("../class/helper.php");
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../assets/img/logo_trasparente.png">
   <title>
-    Colegio Abraham
+    Biblioteca Plus
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -50,12 +50,12 @@ include_once ("../class/helper.php");
               <label for="estado" name="fecha" class="form-control-label">Fecha</label>
                <input type="date" class="form-control filtro" value="" onchange="filtro(event)"  filtro='fecha_creacion'>
               </div>
-              <?php if(!empty($permiso)): ?>
+              
               <div class="col-1">
                 <label class="form-conrol-label">Agre.</label>
                 <a href="editCuadre.php?id=-1" class="btn btn-success"><i class="ni ni-fat-add"></i> </a>
               </div>
-              <?php endif?>
+              
             </div>
               
             </div>
@@ -110,7 +110,7 @@ include_once ("../class/helper.php");
 
 </html>
 
-<script>
+<!-- <script>
   let  buscador = document.getElementById('buscador');
 
     buscador.addEventListener('input',(e)=>{
@@ -190,4 +190,4 @@ include_once ("../class/helper.php");
     
   // }
 
-</script>
+</script> -->

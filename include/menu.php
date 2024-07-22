@@ -3,7 +3,7 @@
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="navbar-brand m-0" href="" target="_blank">
-      <img src="" class="navbar-brand-img h-100" alt="main_logo">
+      <img src="../assets/img/Logo2.jpeg" class="navbar-brand-img h-100" alt="main_logo">
       <span class="ms-1 font-weight-bold">Biblioteca</span>
     </a>
   </div>
@@ -37,15 +37,7 @@
           </a>
         </li> -->
 
-        <li class="nav-item">
-          <a class="nav-link " href="../pages/docente.php">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-badge text-info text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Docente</span>
-          </a>
-        </li>
-   
+        
         <li class="nav-item">
           <a class="nav-link " href="../pages/usuario.php">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -83,11 +75,11 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link " href="../pages/facturacion.php">
+        <a class="nav-link " href="../pages/facturacionPerfil.php">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
           </div>
-          <span class="nav-link-text ms-1">Facturación</span>
+          <span class="nav-link-text ms-1">Prestamos</span>
         </a>
       </li>
 

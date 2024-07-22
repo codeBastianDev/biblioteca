@@ -5,9 +5,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-  <link rel="shortcut icon" href="assets/img/logo.jpg" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/Logo2.jpeg">
+  <link rel="icon" type="image/png" href="../assets/img/Logo2.jpeg">
+  <link rel="shortcut icon" href="assets/img/Logo2.jpeg" type="image/x-icon">
   <title>
    Biblioteca Plus
   </title>
@@ -39,7 +39,7 @@
             <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
               <div class="card card-plain">
                 <div class="card-header pb-0 text-center">
-                  <img src="" class="img w-75" alt="" >
+                  <img src="assets/img/Logo2.jpeg" class="img w-75" alt="" >
                   <h4 class="font-weight-bolder">Bienvenido</h4>
                   <p class="mb-0">Ingrese su usuario y contraseña</p>
                 </div>

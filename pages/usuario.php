@@ -2,7 +2,7 @@
 session_start();
 $modulo = "Listado de usuario";
 include_once ("../class/helper.php");  
-$permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET({$_SESSION['id']},modificar) and id = 6");
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +13,7 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../assets/img/logo_trasparente.png">
   <title>
-    Colegio Abraham
+    Biblioteca Plus
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -55,12 +55,12 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
                   <option value="2">Inactivo</option>
                 </select>
               </div>
-              <?php if(!empty($permiso)): ?>
+              
               <div class="col-1">
                 <label class="form-conrol-label">Conf</label>
                 <a href="editUsuario.php?id=-1" class="btn btn-success"><i class="ni ni-fat-add"></i> </a>
               </div>
-              <?php endif?>
+              
             </div>
               
             </div>
@@ -114,7 +114,7 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
 
 </html>
 
-<script>
+ <script>
   let  buscador = document.getElementById('buscador');
 
     buscador.addEventListener('input',(e)=>{
@@ -125,23 +125,25 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
         est.style.display = '';
       }
     })
-  })
+  }) 
 
 
   
-  // fetch('../controller/listEstudiante.php').then(resul => resul.text()).then(r => console.log(r));
-  function filtro (e){
-    let formulario = new FormData();
-    document.querySelectorAll('.filtro')
-    let date = (e.target.getAttribute('filtro'));
-    let filtros = document.querySelectorAll('.filtro').forEach(input=>{
-
-      if(input.value){
-        data = input.value;
-        indice = input.getAttribute('filtro')
-        formulario.append(indice,data);
-      }
-})
+  fetch('../controller/listEstudiante.php').then(resul => resul.text()).then(r => console.log(r));
+ do {
+   function filtro (e){
+     let formulario = new FormData();
+     document.querySelectorAll('.filtro')
+     let date = (e.target.getAttribute('filtro'));
+     let filtros = document.querySelectorAll('.filtro').forEach(input=>{
+ 
+       if(input.value){
+         data = input.value;
+         indice = input.getAttribute('filtro')
+         formulario.append(indice,data);
+       }
+ })
+ } while (condition);
 
   fetch('../controller/listUsuario.php', {
       method: 'POST',
@@ -152,7 +154,7 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
       document.getElementById('contenedor-principal').innerHTML = `${datos}`;
     }
     );
-  }
+   }
 
 
   fetch('../controller/listUsuario.php')
@@ -162,18 +164,18 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
     document.getElementById('contenedor-principal').innerHTML = `${r}`;
   });
   
-  // function ira(){
-  //   fetch('editEstudiante.php',{
-  //     method:'POST',
-  //     body:'sebastian'
-  //   }).then(responde =>{
-  //     if(responde.ok){
-  //       location.href ='editEstudiante.php';
-  //     }
-  //   })
+  function ira(){
+    fetch('editEstudiante.php',{
+      method:'POST',
+      body:'sebastian'
+    }).then(responde =>{
+      if(responde.ok){
+        location.href ='editEstudiante.php';
+      }
+    })
 
     
     
-  // }
+  }
 
 </script>

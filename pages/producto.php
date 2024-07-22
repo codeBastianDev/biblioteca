@@ -2,7 +2,6 @@
 $modulo = "Listado de producto";
 include_once ("../class/helper.php");  
 session_start();
-$permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET({$_SESSION['id']},modificar) and id = 3");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +12,7 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../assets/img/logo_trasparente.png">
   <title>
-    Colegio Abraham
+    Biblioteca Plus
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -65,12 +64,12 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
                   <option value="2">Inactivo</option>
                 </select>
               </div>
-              <?php if(!empty($permiso)): ?>
+            
               <div class="col-1">
                 <label class="form-conrol-label">Agreg.</label>
                 <a href="editProducto.php?id=-1" class="btn btn-success"><i class="ni ni-fat-add"></i> </a>
               </div>
-              <?php endif?>
+         
             </div>
               
             </div>
@@ -124,7 +123,7 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
 
 </html>
 
-<script>
+<!-- <script>
   let  buscador = document.getElementById('buscador');
 
     buscador.addEventListener('input',(e)=>{
@@ -173,4 +172,4 @@ $permiso = (new db(null))->dataTable("SELECT id FROM permisos where FIND_IN_SET(
   });
   
 
-</script>
+</script> -->
