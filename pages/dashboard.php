@@ -2,10 +2,9 @@
 include('../class/helper.php');
 $modulo = "Dashboard";
 
-// Verifica el usuario
+
 validarUser();
 
-// Conectar con la base de datos
 $pdo = new PDO('mysql:host=localhost;dbname=biblioteca', 'root', ''); // Cambia las credenciales si es necesario
 
 

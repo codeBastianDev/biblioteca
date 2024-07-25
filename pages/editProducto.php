@@ -15,7 +15,7 @@ if($_POST){
   // _log($valor);
    $libro = new libro($id);
    $libro->save($valor);
-   header("Location: http://localhost/book/biblioteca/pages/producto.php");
+   header("Location: producto.php");
    exit;
 } ;
 session_start();

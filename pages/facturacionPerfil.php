@@ -1,18 +1,66 @@
 <?php
-
 $modulo = "Prestamos";
-include("../include/header.php");
-include("../class/helper.php");
+include ("../include/header.php");
+include ("../class/helper.php");
 
+// Conectar a la base de datos
+$conexion = new Conexion();
+$conexion->conexion();
+
+// Obtener el ID del usuario
+$usuario_id = $_SESSION['usuario_id'] ?? $_GET['usuario_id'] ?? 1;
+
+// Consultar información del usuario
+$sql = "SELECT * FROM users WHERE id = ?";
+$stmt = $conexion->cnx->prepare($sql);
+$stmt->bind_param("i", $usuario_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$usuario = $result->fetch_assoc();
+
+if (!$usuario) {
+  echo "Usuario no encontrado";
+  $conexion->closeConexion();
+  exit;
+}
+
+// Obtener fechas de inicio y fin para el filtro
+$fecha_inicio = $_GET['fecha_inicio'] ?? '';
+$fecha_fin = $_GET['fecha_fin'] ?? '';
+
+// Consultar préstamos
+$sql_prestamos = "SELECT reservations.*, books.titulo, books.imagen FROM reservations JOIN books ON reservations.libro_id = books.id WHERE usuario_id = ?";
+
+if ($fecha_inicio && $fecha_fin) {
+  $sql_prestamos .= " AND fecha_reserva >= ? AND fecha_expiracion <= ?";
+  $stmt_prestamos = $conexion->cnx->prepare($sql_prestamos);
+  $stmt_prestamos->bind_param("iss", $usuario_id, $fecha_inicio, $fecha_fin);
+} else {
+  $stmt_prestamos = $conexion->cnx->prepare($sql_prestamos);
+  $stmt_prestamos->bind_param("i", $usuario_id);
+}
+$stmt_prestamos->execute();
+$result_prestamos = $stmt_prestamos->get_result();
+
+// Cerrar conexión a la base de datos
+$conexion->closeConexion();
 ?>
 
 <body class="g-sidenav-show bg-gray-100">
   <div class="min-height-300 bg-primary position-absolute w-100"></div>
-  <?php include("../include/menu.php") ?>
+  <?php include ("../include/menu.php") ?>
   <main class="main-content position-relative border-radius-lg">
     <!-- Navbar -->
-    <?php include("../include/menuUser.php") ?>
+    <?php include ("../include/menuUser.php") ?>
     <!-- End Navbar -->
+    <style>
+      .badge-custom {
+        background-color: green;
+        
+        color: white;
+        
+      }
+    </style>
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-lg-12">
@@ -21,71 +69,44 @@ include("../class/helper.php");
             <div class="col-xl-6 mb-xl-0 mb-4">
               <div class="card bg-white shadow-xl">
                 <div class="card-body text-center">
-                  <img src="../assets/foto_estudiante/" class="w-50 rounded-3" alt="">
-                  <h4 class="card-title">Información del Usuario</h4>
-                  <h6 class="category text-info text-gradient"></h6>
-                  <p class="card-description"></p>
+                  <h3>Información del Usuario</h3>
+                  <h4 class="card-title"><?= htmlspecialchars($usuario['nombre']) ?>
+                    <?= htmlspecialchars($usuario['apellido']) ?></h4>
+                  <h6 class="category text-info text-gradient"><?= htmlspecialchars($usuario['email']) ?></h6>
+                  <p class="card-description">
+                    Teléfono: <?= htmlspecialchars($usuario['telefono']) ?><br>
+                    Dirección: <?= htmlspecialchars($usuario['direccion']) ?><br>
+                    Fecha de Registro: <?= htmlspecialchars($usuario['fecha_registro']) ?>
+                  </p>
                 </div>
               </div>
             </div>
 
-            <!-- Préstamos y Devoluciones -->
-            <div class="col-xl-6">
-              <div class="row">
-                <!-- Préstamos Activos -->
-                <div class="col-md-6">
-                  <div class="card">
-                    <div class="card-header mx-4 p-3 text-center">
-                      <div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
-                        <i class="fas fa-book opacity-10"></i>
+            <!-- Filtros de Préstamos -->
+            <div class="col-xl-6 mb-xl-0 mb-4">
+              <div class="card bg-white shadow-xl">
+                <div class="card-body">
+                  <div class="card-header mx-4 p-3 text-center">
+                    <div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
+                      <i class="fas fa-book opacity-10"></i>
+                    </div>
+                  </div>
+                  <h6 class="text-center mb-4">Filtrar Préstamos por Fechas</h6>
+                  <form method="GET" action="facturacionPerfil.php">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="fecha_inicio">Fecha Inicial</label>
+                        <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control"
+                          value="<?= htmlspecialchars($fecha_inicio) ?>">
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="fecha_fin">Fecha Final</label>
+                        <input type="date" id="fecha_fin" name="fecha_fin" class="form-control"
+                          value="<?= htmlspecialchars($fecha_fin) ?>">
                       </div>
                     </div>
-                    <div class="card-body pt-0 p-3 text-center">
-                      <h6 class="text-center mb-0">Préstamos Activos</h6>
-                      <span class="text-xs"></span>
-                      <hr class="horizontal dark my-3">
-                      <h5 class="mb-0">Listado de libros prestados</h5>
-                    </div>
-                  </div>
-                </div>
-                <!-- Devoluciones Pendientes -->
-                <div class="col-md-6 mt-md-0 mt-4">
-                  <div class="card">
-                    <div class="card-header mx-4 p-3 text-center">
-                      <div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
-                        <i class="fa-solid fa-undo opacity-10"></i>
-                      </div>
-                    </div>
-                    <div class="card-body pt-0 p-3 text-center">
-                      <h6 class="text-center mb-0">Devoluciones Pendientes</h6>
-                      <span class="text-xs"></span>
-                      <hr class="horizontal dark my-3">
-                      <h5 class="mb-0">Listado de libros a devolver</h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Formulario para Préstamo de Libros -->
-            <div class="col-md-12 mb-lg-0 mb-4">
-              <div class="card mt-4">
-                <div class="card-header pb-0 p-3">
-                  <div class="row">
-                    <div class="col-6 d-flex align-items-center">
-                      <h6 class="mb-0">Nuevo Préstamo</h6>
-                    </div>
-                    <div class="col-6 text-end">
-                      <a class="btn bg-gradient-dark mb-0" data-bs-toggle='modal' data-bs-target='#addPrestamo' onclick="cargarLibros()" href="javascript:;">
-                        <i class="fas fa-plus"></i>&nbsp;&nbsp;Agregar Préstamo
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="card-body p-3">
-                  <div class="row" id="contendor-prestamos">
-                    <!-- Aquí se cargarán los préstamos -->
-                  </div>
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -96,37 +117,56 @@ include("../class/helper.php");
                 <div class="card-header pb-0 p-3">
                   <h6 class="mb-0">Historial de Préstamos</h6>
                 </div>
-                <div class="card-body pt-4 p-3" style="overflow: auto;">
-                  <ul class="list-group" style="height: 100vh;">
-                    <!-- Aquí se listarán los préstamos históricos -->
-                  </ul>
-                </div>
-              </div>
-            </div>
+                <div class="card-body pt-4 p-3">
+                  <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                      <thead>
+                        <tr>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Imagen</th>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Título del
+                            Libro</th>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Fecha de
+                            Reserva</th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Estado</th>
+                          <th class="text-secondary opacity-7"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php if ($result_prestamos->num_rows > 0): ?>
+                          <?php while ($prestamo = $result_prestamos->fetch_assoc()): ?>
+                            <tr>
+                              <td>
+                                <div class="d-flex px-2 py-1">
+                                  <div>
+                                    <img src="<?= htmlspecialchars($prestamo['imagen']) ?>" class="avatar avatar-sm me-3"
+                                      alt="Imagen del libro">
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div class="d-flex flex-column justify-content-center">
+                                  <h6 class="mb-0 text-xs"><?= htmlspecialchars($prestamo['titulo']) ?></h6>
+                                </div>
+                              </td>
+                              <td>
+                                <p class="text-xs font-weight-bold mb-0"><?= htmlspecialchars($prestamo['fecha_reserva']) ?>
+                                </p>
+                              </td>
+                              <td class="align-middle text-center">
+                                <span class="badge badge-sm badge-custom">Disponible</span>
+                              </td>
 
-            <!-- Modal para Agregar Préstamo -->
-            <div class="modal fade" id="addPrestamo" tabindex="-1" role="dialog" aria-labelledby="addPrestamoTitle" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="addPrestamoLabel">Agregar Nuevo Préstamo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">×</span>
-                    </button>
+                            </tr>
+                          <?php endwhile; ?>
+                        <?php else: ?>
+                          <tr>
+                            <td colspan="5" class="text-center">No hay préstamos para mostrar.</td>
+                          </tr>
+                        <?php endif; ?>
+                      </tbody>
+                    </table>
                   </div>
-                  <div class="modal-body">
-                    <form>
-                      <div class="form-group">
-                        <label for="libro-titulo" class="col-form-label">Título del Libro:</label>
-                        <input type="text" class="form-control" id="libro-titulo">
-                      </div>
-                      <div class="form-group">
-                        <label for="nombre-usuario" class="col-form-label">Nombre del Usuario:</label>
-                        <input type="text" class="form-control" id="nombre-usuario">
-                      </div>
-                    </form>
-                  </div>
-                 
                 </div>
               </div>
             </div>
@@ -138,19 +178,10 @@ include("../class/helper.php");
 
   <?php include "../include/configuracion.php" ?>
 
-  <!-- Script para manejo de préstamos -->
+  <!-- Script para manejo de fechas -->
   <script>
-    function agregarPrestamo() {
-      const tituloLibro = document.getElementById('libro-titulo').value;
-      const nombreUsuario = document.getElementById('nombre-usuario').value;
-
-      // Aquí podrías agregar la lógica para agregar el préstamo
-
-      alert(`Préstamo de "${tituloLibro}" agregado para ${nombreUsuario}.`);
-    }
-
-    function cargarLibros() {
-      // Aquí podrías agregar la lógica para cargar los libros en el modal
+    function setFechaInicio(fecha) {
+      document.getElementById('fecha_inicio').value = fecha;
     }
   </script>
 
@@ -161,4 +192,5 @@ include("../class/helper.php");
   <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
   <script src="../assets/js/argon-dashboard.min.js?v=2.0.4"></script>
 </body>
+
 </html>
