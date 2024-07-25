@@ -12,10 +12,10 @@ if($_POST){
   'descripcion' =>$descripcion,
   'categoria'=>$categoria_id
   ];
-  // _log($valor);
+
    $libro = new libro($id);
    $libro->save($valor);
-   header("Location: http://localhost/book/biblioteca/pages/producto.php");
+   header("Location: producto.php");
    exit;
 } ;
 session_start();

@@ -10,7 +10,6 @@ class libro{
     }
 
     public function save($value = []){
-    
         $this->libro->insert([
             "titulo"=> $value['titulo'],
             "autor"=>$value['autor'],
