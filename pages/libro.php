@@ -101,8 +101,26 @@ $modulo = "Listado de libros";
       });
     });
 
-    fetch('../controller/list_libro.php').then(res => res.text()).then(res =>{
-        document.getElementById('books-container').innerHTML = res;
+    fetch('../controller/list_libro.php').then(res => res.json()).then(res =>{
+      res.forEach(e=>{
+        document.getElementById('books-container').innerHTML += (`<div class='col-md-4 lista-libro'>
+                                                            <div class='card mb-4' data-id='1'>
+                                                              <img src='${e.imagen}' class='card-img-top' alt='Portada del libro 1'>
+                                                              <div class='card-body d-flex flex-column text-center'>
+                                                                <h5 class='card-title'>${e.titulo}</h5>
+                                                                <p class='card-text'><strong>Editorial:</strong> ${e.editorial}</p>
+                                                                <p class='card-text'><strong>Categoria:</strong> ${e.categoria} 
+                                                                  <br>
+                                                                  <strong>Autor:</strong> ${e.autor ?? ""}
+                                                                </p>
+                                                                <p class='card-text'>Descripción: ${e.descripcion ?? ""}</p>
+                                                                <p class='card-text'>Publicado: ${e.anio_publicacion ?? ""}</p>
+                                                                <button class='btn btn-primary mt-auto rent-btn'>Alquilar</button>
+                                                              </div>
+                                                            </div>
+                                                          </div>`)
+      });
+ 
     })
   </script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>

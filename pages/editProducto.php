@@ -1,5 +1,23 @@
 <?php
-include_once ("../class/helper.php");  
+
+include_once ("../controller/libro.php");
+if($_POST){
+  extract($_POST);
+  $valor = [
+  'titulo' => $titulo,
+  'autor' => $autor,
+  'editorial' => $editorial,
+  'anio' => $anio,
+  'image' => $imagen,
+  'descripcion' =>$descripcion,
+  'categoria'=>$categoria_id
+  ];
+  // _log($valor);
+   $libro = new libro($id);
+   $libro->save($valor);
+   header("Location: http://localhost/book/biblioteca/pages/producto.php");
+   exit;
+} ;
 session_start();
 $pdo = new PDO('mysql:host=localhost;dbname=biblioteca', 'root', ''); // Cambia las credenciales si es necesario
 
@@ -11,7 +29,7 @@ if ($id != -1) {
     $query->execute([$id]);
     $book = $query->fetch(PDO::FETCH_ASSOC);
 }
-
+// _log($book);
 // Obtener las categorías existentes
 $query = $pdo->query("SELECT * FROM categories");
 $categorias = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -43,8 +61,8 @@ $categorias = $query->fetchAll(PDO::FETCH_ASSOC);
               <h6>Agregar/Editar Libro</h6>
             </div>
             <div class="card-body">
-              <form method="post" action="saveProducto.php">
-                <input type="hidden" name="id" value="<?= $book['id'] ?? -1 ?>">
+              <form method="post" action="#">
+                <input type="hidden" name="id" value="<?= $book['id'] ?? 0 ?>">
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
@@ -72,8 +90,8 @@ $categorias = $query->fetchAll(PDO::FETCH_ASSOC);
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="isbn">ISBN</label>
-                      <input type="text" class="form-control" id="isbn" name="isbn" value="<?= $book['isbn'] ?? '' ?>" required>
+                      <label for="isbn">Editorial</label>
+                      <input type="text" class="form-control" id="isbn" name="editorial" value="<?= $book['editorial'] ?? '' ?>" required>
                     </div>
                   </div>
                 </div>
@@ -85,6 +103,14 @@ $categorias = $query->fetchAll(PDO::FETCH_ASSOC);
                       <?php if (!empty($book['imagen'])): ?>
                         <img src="<?= $book['imagen'] ?>" alt="Imagen del libro" class="img-thumbnail mt-2" style="max-width: 200px;">
                       <?php endif; ?>
+                      
+                    </div>
+                    
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="anio">Año de publicación</label>
+                      <input type="number" class="form-control" id="anio" name="anio" value="<?= $book['anio_publicacion'] ?? '' ?>" placeholder="" required>
                     </div>
                   </div>
                 </div>
