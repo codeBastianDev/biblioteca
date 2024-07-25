@@ -89,7 +89,7 @@ $modulo = "Listado de libros";
     document.getElementById('buscador').addEventListener('keyup', function(e) {
       let searchValue = e.target.value.toLowerCase();
       let cards = document.querySelectorAll('.lista-libro');
-        // console.log(cards);
+        console.log(cards);
       cards.forEach(card => {
         let title = card.querySelector('.card-title').textContent.toLowerCase();
         console.log(title.includes(searchValue));
@@ -107,7 +107,7 @@ $modulo = "Listado de libros";
   </script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="../assets/js/argon-dashboard.min.js?v=2.0.4"></script>
-  <script src="../assets/js/books.js"></script>
+  
 
 </body>
 

@@ -510,5 +510,3 @@ function validarUser()
         header('location:../');
     };
 }
-
-
