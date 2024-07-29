@@ -1,7 +1,20 @@
 <?php
 $modulo = "Prestamos";
 include ("../include/header.php");
-include ("../class/helper.php");
+include ("../controller/prestamo.php");
+if($_POST)
+{
+  extract($_POST);
+  $valores = [
+    "usuario" => $_SESSION['id'],
+    "reserva" => $fecha_inicio,
+    "expiracion" => $fecha_fin
+ ];
+
+  (new prestamo([$libro],$valores));
+  header('location: libro.php');
+  exit;
+}
 
 // Conectar a la base de datos
 $conexion = new Conexion();
@@ -56,9 +69,9 @@ $conexion->closeConexion();
     <style>
       .badge-custom {
         background-color: green;
-        
+
         color: white;
-        
+
       }
     </style>
     <div class="container-fluid py-4">
@@ -71,12 +84,12 @@ $conexion->closeConexion();
                 <div class="card-body text-center">
                   <h3>Información del Usuario</h3>
                   <h4 class="card-title"><?= htmlspecialchars($usuario['nombre']) ?>
-                    <?= htmlspecialchars($usuario['apellido']) ?></h4>
+                    <?= htmlspecialchars($usuario['apellido']) ?>
+                  </h4>
                   <h6 class="category text-info text-gradient"><?= htmlspecialchars($usuario['email']) ?></h6>
                   <p class="card-description">
                     Teléfono: <?= htmlspecialchars($usuario['telefono']) ?><br>
                     Dirección: <?= htmlspecialchars($usuario['direccion']) ?><br>
-                    Fecha de Registro: <?= htmlspecialchars($usuario['fecha_registro']) ?>
                   </p>
                 </div>
               </div>
@@ -92,7 +105,8 @@ $conexion->closeConexion();
                     </div>
                   </div>
                   <h6 class="text-center mb-4">Filtrar Préstamos por Fechas</h6>
-                  <form method="GET" action="facturacionPerfil.php">
+                  <form method="post" action="facturacionPerfil.php">
+                    <input type="hidden" name="libro" value="<?=$_GET['libro']?>">
                     <div class="row">
                       <div class="col-md-6 mb-3">
                         <label for="fecha_inicio">Fecha Inicial</label>
@@ -105,7 +119,7 @@ $conexion->closeConexion();
                           value="<?= htmlspecialchars($fecha_fin) ?>">
                       </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <button type="submit" class="btn btn-primary w-100">Adquirir</button>
                   </form>
                 </div>
               </div>
@@ -122,48 +136,17 @@ $conexion->closeConexion();
                     <table class="table align-items-center mb-0">
                       <thead>
                         <tr>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Imagen</th>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Título del
-                            Libro</th>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Fecha de
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Titulo</th>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Categoria</th>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Editorial
                             Reserva</th>
                           <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                            Estado</th>
+                            Año de publicacion</th>
                           <th class="text-secondary opacity-7"></th>
                         </tr>
                       </thead>
                       <tbody>
-                        <?php if ($result_prestamos->num_rows > 0): ?>
-                          <?php while ($prestamo = $result_prestamos->fetch_assoc()): ?>
-                            <tr>
-                              <td>
-                                <div class="d-flex px-2 py-1">
-                                  <div>
-                                    <img src="<?= htmlspecialchars($prestamo['imagen']) ?>" class="avatar avatar-sm me-3"
-                                      alt="Imagen del libro">
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div class="d-flex flex-column justify-content-center">
-                                  <h6 class="mb-0 text-xs"><?= htmlspecialchars($prestamo['titulo']) ?></h6>
-                                </div>
-                              </td>
-                              <td>
-                                <p class="text-xs font-weight-bold mb-0"><?= htmlspecialchars($prestamo['fecha_reserva']) ?>
-                                </p>
-                              </td>
-                              <td class="align-middle text-center">
-                                <span class="badge badge-sm badge-custom">Disponible</span>
-                              </td>
-
-                            </tr>
-                          <?php endwhile; ?>
-                        <?php else: ?>
-                          <tr>
-                            <td colspan="5" class="text-center">No hay préstamos para mostrar.</td>
-                          </tr>
-                        <?php endif; ?>
+                      
                       </tbody>
                     </table>
                   </div>
@@ -183,7 +166,45 @@ $conexion->closeConexion();
     function setFechaInicio(fecha) {
       document.getElementById('fecha_inicio').value = fecha;
     }
+    let confing = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ b__id: <?=$_GET['libro']?> })
+    }
+    fetch('../controller/list_libro.php',confing).then(response => response.json())
+      .then(data => {
+        data.forEach(e =>{
+          document.querySelector('tbody').innerHTML += `  <tr>
+                            <td>
+                              <div class="d-flex px-2 py-1">
+                                <div>
+                                  <img
+                                    src="${e.imagen}"
+                                    class="avatar avatar-sm me-3">
+                                </div>
+                                <div class="d-flex flex-column justify-content-center">
+                                  <h6 class="mb-0 text-xs">${e.titulo}</h6>
+                                  <p class="text-xs text-secondary mb-0">${e.autor}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <p class="text-xs font-weight-bold mb-0">${e.categoria}</p>
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                         <p class="text-xs font-weight-bold mb-0">${e.editorial}</p>
+                            </td>
+                            <td class="align-middle text-center">
+                              <span class="text-secondary text-xs font-weight-bold">${e.anio_publicacion}</span>
+                            </td>
+                          </tr>`;
+        })
+      });
+
   </script>
+
 
   <!-- JS Core Files -->
   <script src="../assets/js/core/popper.min.js"></script>

@@ -1,15 +1,22 @@
 <?php
 include ('../class/helper.php');
 $modulo = "Listado de libros";
+$datos = json_decode(file_get_contents('php://input'));
 
-session_start();
+if(!empty($datos)){
+
+  $datos = getFiltro(get_object_vars($datos));
+}else{
+  $datos = null;
+};
+
 $libro = (new db('books b'))
             ->joinQuery(
                 ['categories c'],
                 ['0'],
                 ['c.id = b.categoria_id'],
-                null,
-                ['b.*','c.nombre categoria']                          
+                 $datos,
+                ['b.*','c.nombre categoria'],"GROUP By b.id"                          
             );
 
 
