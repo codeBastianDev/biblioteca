@@ -63,6 +63,6 @@ $valores = [
 ];
 
 // ((new prestamo([1,2],$valores))->libro);
-prestamo::fin_prestamo([13,14],[1,2]);
+// prestamo::fin_prestamo([13,14],[1,2]);
 
 ?>

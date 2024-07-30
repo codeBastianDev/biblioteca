@@ -1,38 +1,51 @@
 <?php
-include('../class/helper.php');
+include ('../class/helper.php');
 $modulo = "Dashboard";
 
-
 validarUser();
+
+$prestamo = new db('reservations');
+$libro = [];
+foreach (($prestamo->cargar(0, ["usuario_id = {$_SESSION['id']}"])) as $value) {
+    $libro[] = $value['libro_id'];
+}
+
+$reservations = (new db('books b'))
+    ->joinQuery(
+        ['categories c', 'reservations r'],
+        ['0', 2],
+        ['c.id = b.categoria_id', 'b.id = r.libro_id'],
+        ["usuario_id  = {$_SESSION['id']}"],
+        ['b.*', 'c.nombre categoria', 'r.fecha_reserva reserva', 'r.fecha_expiracion expiracion'],
+        "GROUP By b.id"
+    );
+
+
+
+$libro = implode(',', $libro);
+
 
 $pdo = new PDO('mysql:host=localhost;dbname=biblioteca', 'root', ''); // Cambia las credenciales si es necesario
 
 
-$query = $pdo->query("SELECT COUNT(*) as total_reservations FROM reservations WHERE fecha_expiracion IS NULL");
+$query = $pdo->query("SELECT COUNT(*) as total_reservations FROM reservations WHERE estado = 1 and usuario_id = '{$_SESSION['id']}'");
 $reservationCount = $query->fetch(PDO::FETCH_ASSOC)['total_reservations'];
 
 
 $query = $pdo->query("SELECT usuario_id, fecha_reserva, fecha_expiracion FROM reservations WHERE fecha_expiracion IS NULL");
-$reservations = $query->fetchAll(PDO::FETCH_ASSOC);
+// $reservations = $query->fetchAll(PDO::FETCH_ASSOC);
 
 
-$query = $pdo->query("SELECT COUNT(*) as overdue_count FROM reservations WHERE fecha_expiracion < CURDATE()");
+$query = $pdo->query("SELECT COUNT(*) as overdue_count FROM reservations  WHERE estado = 1 and usuario_id = '{$_SESSION['id']}' and fecha_expiracion < CURDATE()");
 $overdueCount = $query->fetch(PDO::FETCH_ASSOC)['overdue_count'];
 
 
 $usuarios = [];
-foreach ($reservations as $reservation) {
-    $userId = $reservation['usuario_id'];
-    if (!isset($usuarios[$userId])) {
-        $userQuery = $pdo->prepare("SELECT nombre FROM users WHERE id = ?");
-        $userQuery->execute([$userId]);
-        $user = $userQuery->fetch(PDO::FETCH_ASSOC);
-        $usuarios[$userId] = $user['nombre'] ?? 'Desconocido'; 
-    }
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -45,11 +58,12 @@ foreach ($reservations as $reservation) {
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <link href="../assets/css/argon-dashboard.css?v=2.0.4" rel="stylesheet" />
 </head>
+
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 bg-primary position-absolute w-100"></div>
-    <?php include_once("../include/menu.php") ?>
+    <?php include_once ("../include/menu.php") ?>
     <main class="main-content position-relative border-radius-lg ">
-        <?php include_once("../include/menuUser.php") ?>
+        <?php include_once ("../include/menuUser.php") ?>
         <div class="container-fluid py-4">
             <div class="row">
                 <div class="col-xl-6 col-sm-12 mb-xl-0 mb-4">
@@ -57,7 +71,8 @@ foreach ($reservations as $reservation) {
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                    <div
+                                        class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
                                         <i class="ni ni-books text-lg opacity-10" aria-hidden="true"></i>
                                     </div>
                                 </div>
@@ -77,13 +92,15 @@ foreach ($reservations as $reservation) {
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                    <div
+                                        class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
                                         <i class="ni ni-time-alarm text-lg opacity-10" aria-hidden="true"></i>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="numbers">
-                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Devoluciones Pendientes</p>
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Devoluciones Pendientes
+                                        </p>
                                         <h5 class="font-weight-bolder"><?= $overdueCount ?></h5>
                                         <p class="mb-0 text-sm">Última actualización: hoy</p>
                                     </div>
@@ -106,17 +123,31 @@ foreach ($reservations as $reservation) {
                             <table class="table align-items-center">
                                 <thead>
                                     <tr>
-                                        <th>Nombre del Usuario</th>
+                                        <th>Libro</th>
                                         <th>Fecha de Reserva</th>
                                         <th>Fecha de Expiración</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($reservations as $reservation): ?>
+                                    <?php foreach ($reservations as $reservation):?>
                                         <tr>
-                                            <td><?= htmlspecialchars($usuarios[$reservation['usuario_id']] ?? 'Desconocido') ?></td>
-                                            <td><?= htmlspecialchars(date('Y-m-d', strtotime($reservation['fecha_reserva']))) ?></td>
-                                            <td><?= htmlspecialchars(date('Y-m-d', strtotime($reservation['fecha_expiracion']))) ?></td>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div>
+                                                    <img src="<?=$reservation['imagen']?>" class="avatar avatar-sm me-3">
+                                                </div>
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-xs"><?=$reservation['titulo']?></h6>
+                                                    <p class="text-xs text-secondary mb-0"><?=$reservation['autor']?></p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="text-xs font-weight-bold mb-0"><?=$reservation['reserva']?></p>
+                                        </td>
+                                        <td class="align-middle text-center text-sm">
+                                            <p class="text-xs font-weight-bold mb-0"><?=$reservation['expiracion']?></p>
+                                        </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -127,7 +158,7 @@ foreach ($reservations as $reservation) {
             </div>
         </div>
     </main>
-    <?php include('../include/configuracion.php') ?>
+    <?php include ('../include/configuracion.php') ?>
     <script src="../assets/js/core/popper.min.js"></script>
     <script src="../assets/js/core/bootstrap.min.js"></script>
     <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
@@ -139,8 +170,45 @@ foreach ($reservations as $reservation) {
             var options = { damping: '0.5' }
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
+        let confing = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ usuario_id: <?= $_SESSION['id'] ?> })
+        }
+        fetch('../controller/list_libro.php', confing).then(response => response.json())
+            .then(data => {
+                data.forEach(e => {
+                    document.querySelector('tbody').innerHTML += `  <tr>
+                            <td>
+                              <div class="d-flex px-2 py-1">
+                                <div>
+                                  <img
+                                    src="${e.imagen}"
+                                    class="avatar avatar-sm me-3">
+                                </div>
+                                <div class="d-flex flex-column justify-content-center">
+                                  <h6 class="mb-0 text-xs">${e.titulo}</h6>
+                                  <p class="text-xs text-secondary mb-0">${e.autor}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <p class="text-xs font-weight-bold mb-0">${e.reserva}</p>
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                         <p class="text-xs font-weight-bold mb-0">${e.expiracion}</p>
+                            </td>
+                          </tr>`;
+                })
+            });
+
     </script>
+
+
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="../assets/js/argon-dashboard.min.js?v=2.0.4"></script>
 </body>
+
 </html>
