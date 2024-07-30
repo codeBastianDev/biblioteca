@@ -115,7 +115,7 @@ $modulo = "Listado de libros";
                                                                 </p>
                                                                 <p class='card-text'>Descripción: ${e.descripcion ?? ""}</p>
                                                                 <p class='card-text'>Publicado: ${e.anio_publicacion ?? ""}</p>
-                                                                <button class='btn btn-primary mt-auto rent-btn'>Alquilar</button>
+                                                                <button class='btn btn-primary mt-auto rent-btn'>Reservar</button>
                                                               </div>
                                                             </div>
                                                           </div>`)
