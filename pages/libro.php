@@ -67,7 +67,8 @@ $modulo = "Listado de libros";
           <button class="btn btn-sm bg-gradient-primary my-1 me-1">Search</button>
         </div>
       </div>
-      <div class="row" id="books-container">
+      
+    <div class="row" id="books-container">
 
 
       </div>
