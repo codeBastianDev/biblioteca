@@ -7,7 +7,7 @@ class prestamo {
 
     private $data;
      // Constructor
-     public function __construct($id = [],$valores = []) {
+     public function __construct($id = [],$valores = 0) {
         $this->data = $valores;
         $this->libro_id = implode(',',$id); 
 
@@ -44,13 +44,13 @@ class prestamo {
        
      }
 
-     static function fin_prestamo($id = [],$id_libro){
-         foreach ($id as $value) {
+     static function fin_prestamo($id ,$id_libro){
+        
             $reservacion = new db('reservations');
             $reservacion->insert([
                "estado" => 2
-              ],$value);
-         };
+              ],$id);
+         
          (new prestamo($id_libro))->prestamo_libro(1);
      }
 

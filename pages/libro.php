@@ -63,9 +63,16 @@ $modulo = "Listado de libros";
           <button class="btn btn-sm bg-gradient-primary my-1 me-1">Search</button>
         </div>
       </div>
+<<<<<<< HEAD
+      
+    <div class="row" id="books-container">
+
+
+=======
       <div class="row" id="books-container">
         
      
+>>>>>>> a3691f645acd9823741219d491356777eee077a9
       </div>
     </div>
   </main>

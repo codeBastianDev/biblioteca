@@ -16,7 +16,7 @@ $reservations = (new db('books b'))
         ['0', 2],
         ['c.id = b.categoria_id', 'b.id = r.libro_id'],
         ["usuario_id  = {$_SESSION['id']}"],
-        ['b.*', 'c.nombre categoria', 'r.fecha_reserva reserva', 'r.fecha_expiracion expiracion'],
+        ['b.*', 'c.nombre categoria', 'r.fecha_reserva reserva', 'r.fecha_expiracion expiracion','r.id id_prestamo'],
         "GROUP By b.id"
     );
 
@@ -116,6 +116,7 @@ $usuarios = [];
                                         <th>Libro</th>
                                         <th>Fecha de Reserva</th>
                                         <th>Fecha de Expiración</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -138,6 +139,7 @@ $usuarios = [];
                                         <td class="align-middle text-center text-sm">
                                             <p class="text-xs font-weight-bold mb-0"><?=$reservation['expiracion']?></p>
                                         </td>
+                                        <td><button class="btn btn-primary" onclick="entregar(<?=$reservation['id_prestamo']?>,<?=$reservation['id']?>)">Entregar libro</button></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -160,40 +162,20 @@ $usuarios = [];
             var options = { damping: '0.5' }
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
-        let confing = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ usuario_id: <?= $_SESSION['id'] ?> })
-        }
-        fetch('../controller/list_libro.php', confing).then(response => response.json())
-            .then(data => {
-                data.forEach(e => {
-                    document.querySelector('tbody').innerHTML += `  <tr>
-                            <td>
-                              <div class="d-flex px-2 py-1">
-                                <div>
-                                  <img
-                                    src="${e.imagen}"
-                                    class="avatar avatar-sm me-3">
-                                </div>
-                                <div class="d-flex flex-column justify-content-center">
-                                  <h6 class="mb-0 text-xs">${e.titulo}</h6>
-                                  <p class="text-xs text-secondary mb-0">${e.autor}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <p class="text-xs font-weight-bold mb-0">${e.reserva}</p>
-                            </td>
-                            <td class="align-middle text-center text-sm">
-                         <p class="text-xs font-weight-bold mb-0">${e.expiracion}</p>
-                            </td>
-                          </tr>`;
-                })
-            });
+      
 
+            function entregar(id,libro){
+                confing ={
+                    method:"POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body:JSON.stringify({prestamo:id,libro:libro})
+                }
+                fetch("../controller/fin_libro.php",confing,e =>{
+                    console.log(e);
+                })
+            }
     </script>
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
