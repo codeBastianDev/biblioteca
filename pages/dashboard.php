@@ -20,25 +20,18 @@ $reservations = (new db('books b'))
         "GROUP By b.id"
     );
 
-
-
 $libro = implode(',', $libro);
 
+$pdo = new PDO('mysql:host=localhost;dbname=biblioteca', 'root', '');
 
-$pdo = new PDO('mysql:host=localhost;dbname=biblioteca', 'root', ''); // Cambia las credenciales si es necesario
 
-
-$query = $pdo->query("SELECT COUNT(*) as total_reservations FROM reservations WHERE estado = 1 and usuario_id = '{$_SESSION['id']}'");
+$query = $pdo->query("SELECT COUNT(*) as total_reservations FROM reservations WHERE usuario_id = '{$_SESSION['id']}'");
 $reservationCount = $query->fetch(PDO::FETCH_ASSOC)['total_reservations'];
 
-
 $query = $pdo->query("SELECT usuario_id, fecha_reserva, fecha_expiracion FROM reservations WHERE fecha_expiracion IS NULL");
-// $reservations = $query->fetchAll(PDO::FETCH_ASSOC);
 
-
-$query = $pdo->query("SELECT COUNT(*) as overdue_count FROM reservations  WHERE estado = 1 and usuario_id = '{$_SESSION['id']}' and fecha_expiracion < CURDATE()");
+$query = $pdo->query("SELECT COUNT(*) as overdue_count FROM reservations WHERE usuario_id = '{$_SESSION['id']}' and fecha_expiracion < CURDATE()");
 $overdueCount = $query->fetch(PDO::FETCH_ASSOC)['overdue_count'];
-
 
 $usuarios = [];
 
@@ -71,8 +64,7 @@ $usuarios = [];
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <div
-                                        class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                    <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
                                         <i class="ni ni-books text-lg opacity-10" aria-hidden="true"></i>
                                     </div>
                                 </div>
@@ -92,15 +84,13 @@ $usuarios = [];
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <div
-                                        class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                    <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
                                         <i class="ni ni-time-alarm text-lg opacity-10" aria-hidden="true"></i>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="numbers">
-                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Devoluciones Pendientes
-                                        </p>
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Devoluciones Pendientes</p>
                                         <h5 class="font-weight-bolder"><?= $overdueCount ?></h5>
                                         <p class="mb-0 text-sm">Última actualización: hoy</p>
                                     </div>
@@ -205,7 +195,6 @@ $usuarios = [];
             });
 
     </script>
-
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="../assets/js/argon-dashboard.min.js?v=2.0.4"></script>
