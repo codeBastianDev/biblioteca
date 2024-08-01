@@ -4,62 +4,18 @@ session_start();
 // Asegúrate de que la ruta al archivo helper.php sea correcta
 include_once("class/helper.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtén los datos del formulario
-    $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
-    $email = $_POST['email'];
-    $contrasena = $_POST['contrasena'];
-    $telefono = $_POST['telefono'];
-    $direccion = $_POST['direccion'];
-
-    // Crea una nueva instancia de la clase de conexión
-    $db = new Conexion();
-    $conn = $db->getConexion();
-
-    // Hashea la contraseña
-    $hashed_password = password_hash($contrasena, PASSWORD_DEFAULT);
-
-    // Inserta los datos en la base de datos
-    $sql = "INSERT INTO users (nombre, apellido, email, contrasena, telefono, direccion, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, NOW())";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssss", $nombre, $apellido, $email, $hashed_password, $telefono, $direccion);
-
-    if ($stmt->execute()) {
-        // Envía un correo electrónico al usuario
-        $to = $email;
-        $subject = "Registro exitoso en Biblioteca Plus";
-        $message = "
-        <html>
-        <head>
-            <title>Registro exitoso</title>
-        </head>
-        <body>
-            <h1>Bienvenido a Biblioteca Plus</h1>
-            <p>Hola $nombre $apellido,</p>
-            <p>Tu registro en Biblioteca Plus ha sido exitoso. Gracias por unirte a nosotros.</p>
-            <p>¡Disfruta de todos nuestros servicios!</p>
-        </body>
-        </html>
-        ";
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= 'From: no-reply@biblioteca-plus.com' . "\r\n";
-
-        if (mail($to, $subject, $message, $headers)) {
-            echo "<div class='alert alert-success'>Registro exitoso. Un correo de confirmación ha sido enviado a tu dirección.</div>";
-            // Redirige al login después de un registro exitoso
-            header("Location: pages/login.php");
-            exit();
-        } else {
-            echo "<div class='alert alert-warning'>Registro exitoso, pero no se pudo enviar el correo de confirmación.</div>";
-        }
-    } else {
-        echo "<div class='alert alert-danger'>Error al registrar al usuario: " . $stmt->error . "</div>";
-    }
-
-    $stmt->close();
-    $db->closeConexion();
+if($_POST){
+   $user = new db('users');
+   $user->insert([
+    'nombre'=>$_POST['nombre'],
+    'apellido'=>$_POST['apellido'],
+    'email'=>$_POST['email'],
+    'contrasena'=>$_POST['contrasena'],
+    'telefono'=>$_POST['telefono'],
+    'direccion'=>$_POST['direccion'],
+    'tipo'=>1,
+   ]);
+  header("location: login.php");
 }
 ?>
 
@@ -97,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <p class="mb-0">Complete el formulario para crear una nueva cuenta</p>
                 </div>
                 <div class="card-body">
-                  <form method="post" role="form">
+                  <form method="post" action="#" role="form">
                     <div class="mb-3">
                       <input type="text" name="nombre" class="form-control form-control-lg" placeholder="Nombre" aria-label="Nombre" required>
                     </div>
@@ -118,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="text-center">
                       <button type="submit" class="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0">Registrar</button>
-                      <a href="pages/login.php" class="btn btn-lg btn-secondary btn-lg w-100 mt-4 mb-0">Iniciar sesión</a>
+                      <a href="login.php" class="btn btn-lg btn-secondary btn-lg w-100 mt-4 mb-0">Iniciar sesión</a>
                     </div>
                   </form>
                 </div>

@@ -10,8 +10,8 @@ foreach ($s as $key ) {
 if($acceso == true){
     session_start();
     $_SESSION['usuario'] = "{$key['nombre']}  {$key['apellido']}"; 
-    // $_SESSION['foto'] = $key['foto']; 
     $_SESSION['id'] = $key['id'];
+    $_SESSION['tipo'] = $key['tipo'];
     header('location:../pages/dashboard.php');
 }else{
     header('location:../');

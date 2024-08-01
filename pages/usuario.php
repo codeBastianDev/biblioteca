@@ -1,7 +1,10 @@
-<?php  
+<?php
 session_start();
 $modulo = "Listado de usuario";
-include_once ("../class/helper.php");  
+include_once ("../class/helper.php");
+
+$usuario = (new db('users'))->cargar(null);
+
 
 ?>
 <!DOCTYPE html>
@@ -30,54 +33,91 @@ include_once ("../class/helper.php");
 <body class="g-sidenav-show   bg-gray-100">
   <div class="min-height-300 bg-primary position-absolute w-100"></div>
   <!-- slider -->
-  <?php include_once("../include/menu.php")?>
+  <?php include_once ("../include/menu.php") ?>
   <!-- slider end-->
   <main class="main-content position-relative border-radius-lg ">
-     <!--  Navbar -->
-     <?php include_once("../include/menuUser.php")?>
+    <!--  Navbar -->
+    <?php include_once ("../include/menuUser.php") ?>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-12">
           <div class="card mb-5">
             <div class="card-header pb-0">
-            <div class="row">
-              <div class="col-9">
-                <label for="" class="form=control-label">Buscador</label>
-                <input type="search" id="buscador" class="form-control" placeholder="Nombre">
+              <div class="row">
+                <div class="col-9">
+                  <label for="" class="form=control-label">Buscador</label>
+                  <input type="search" id="buscador" class="form-control" placeholder="Nombre">
+                </div>
+
+                <div class="col-2">
+                  <label for="estado" name="estado" class="form-control-label">Tipo</label>
+                  <select id="estado" class="form-control filtro" filtro='estado' onchange="filtro(event)">
+                    <option selected value="">Todos</option>
+                    <option value="1">Cliente</option>
+                    <option value="2">Admin</option>
+                  </select>
+                </div>
+
+                <div class="col-1">
+                  <label class="form-conrol-label">Agregar</label>
+                  <a href="editUsuario.php?id=-1" class="btn btn-success"><i class="ni ni-fat-add"></i> </a>
+                </div>
+
               </div>
 
-              <div class="col-2">
-              <label for="estado" name="estado" class="form-control-label">Estado</label>
-                <select  id="estado" class="form-control filtro" filtro='estado' onchange="filtro(event)">
-                  <option value="0">Todos</option>
-                  <option selected value="1">Activo</option>
-                  <option value="2">Inactivo</option>
-                </select>
-              </div>
-              
-              <div class="col-1">
-                <label class="form-conrol-label">Conf</label>
-                <a href="editUsuario.php?id=-1" class="btn btn-success"><i class="ni ni-fat-add"></i> </a>
-              </div>
-              
-            </div>
-              
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Usuario</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Cédula</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Puesto</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Teléfono</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Estado</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Correo</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Telefono</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Dirección
+                      </th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Fecha
+                        registro</th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
                   <tbody id="contenedor-principal">
+                    <?php foreach ($usuario as $value): ?>
+                      <tr>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div>
+                              <img src="../assets/fotoUsuarios/sinFoto.jpg" class="avatar avatar-sm me-3">
+                            </div>
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-xs nombre-user"><?= "{$value['nombre']} {$value['apellido']}" ?></h6>
+                              <!-- <p class="text-xs text-secondary mb-0"><?= $value['email'] ?></p> -->
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <p class="text-xs font-weight-bold mb-0 user-tipo"><?= ($value['tipo'] == 1 ? "Cliente" : "Admin") ?>
+                          </p>
+                          <p class="text-xs text-secondary mb-0"><?= $value['email'] ?></p>
+                        </td>
+                        <td>
+                          <p class="text-xs text-secondary mb-0"><?= $value['telefono'] ?></p>
+                        </td>
+                        <td class="align-middle text-center">
+                          <span class="text-secondary text-xs font-weight-bold"><?= $value['direccion'] ?></span>
+                        </td>
+                        <td class="align-middle text-center">
+                          <span class="text-secondary text-xs font-weight-bold">2<?= $value['fecha_registro'] ?></span>
+                        </td>
+                        <td class="align-middle">
+                          <a href="editUsuario.php?id=<?=$value['id']?>" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip"
+                            data-original-title="Edit user">
+                            Edit
+                          </a>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
                   </tbody>
                 </table>
               </div>
@@ -85,13 +125,13 @@ include_once ("../class/helper.php");
           </div>
         </div>
       </div>
-      
+
     </div>
   </main>
- <!-- Configuracion -->
- <?php include_once("../include/configuracion.php") ?>
- <!-- Configuracion end-->
-       
+  <!-- Configuracion -->
+  <?php include_once ("../include/configuracion.php") ?>
+  <!-- Configuracion end-->
+
   <!--   Core JS Files   -->
   <script src="../assets/js/core/popper.min.js"></script>
   <script src="../assets/js/core/bootstrap.min.js"></script>
@@ -114,68 +154,34 @@ include_once ("../class/helper.php");
 
 </html>
 
- <script>
-  let  buscador = document.getElementById('buscador');
-
-    buscador.addEventListener('input',(e)=>{
-    document.querySelectorAll('.estudiante').forEach(est =>{
-      if(!est.querySelector('.est').textContent.toLowerCase().includes(e.target.value.toLowerCase())){
-        est.style.display = 'NONE';
-      }else{
-        est.style.display = '';
+<script>
+  document.getElementById('buscador').addEventListener('keyup', e => {
+    seach = e.target.value;
+    registro = document.querySelectorAll('tbody tr');
+    registro.forEach(element => {
+      texto = element.querySelector(".nombre-user").textContent.toLowerCase()
+      if (texto.includes(seach.toLowerCase()) || seach == '') {
+        element.style.display = '';
+      } else {
+        element.style.display = 'none';
       }
-    })
-  }) 
+    });
+  })
 
-
-  
-  fetch('../controller/listEstudiante.php').then(resul => resul.text()).then(r => console.log(r));
- do {
-   function filtro (e){
-     let formulario = new FormData();
-     document.querySelectorAll('.filtro')
-     let date = (e.target.getAttribute('filtro'));
-     let filtros = document.querySelectorAll('.filtro').forEach(input=>{
- 
-       if(input.value){
-         data = input.value;
-         indice = input.getAttribute('filtro')
-         formulario.append(indice,data);
-       }
- })
- } while (condition);
-
-  fetch('../controller/listUsuario.php', {
-      method: 'POST',
-      body:formulario
-    })
-    .then(r => r.text())
-    .then(datos =>{
-      document.getElementById('contenedor-principal').innerHTML = `${datos}`;
+  function filtro(e) {
+    if (e.target.value > 0) {
+      seach = (e.target.value == 1) ? "Cliente" : "Admin";
+    } else {
+      seach = '';
     }
-    );
-   }
-
-
-  fetch('../controller/listUsuario.php')
-  .then(resul => resul.text())
-  .then(r =>{
-    
-    document.getElementById('contenedor-principal').innerHTML = `${r}`;
-  });
-  
-  function ira(){
-    fetch('editEstudiante.php',{
-      method:'POST',
-      body:'sebastian'
-    }).then(responde =>{
-      if(responde.ok){
-        location.href ='editEstudiante.php';
+    registro = document.querySelectorAll('tbody tr');
+    registro.forEach(element => {
+      texto = element.querySelector(".user-tipo").textContent.toLowerCase()
+      if (texto.includes(seach.toLowerCase()) || seach == '') {
+        element.style.display = '';
+      } else {
+        element.style.display = 'none';
       }
-    })
-
-    
-    
+    });
   }
-
 </script>

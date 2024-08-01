@@ -3,121 +3,28 @@ $modulo = "Listado de usuario";
 include("../class/helper.php");
 include("../include/header.php");
 
-if ($_POST) {
-  // Valido si es una imagen
-
-  $foto = ($_FILES['foto']['error'] == 0) ? subirImg($_FILES['foto'], '../assets/fotoUsuarios/') : '';
-
-  // Permisos visual
-  $permisos = [];
-  $permisos[1] = array(
-    $_POST['estudianteM'] = isset($_POST['estudianteM']) ? $_POST['estudianteM'] : 0,
-    $_POST['permisoE'] = isset($_POST['permisoE']) ? $_POST['permisoE'] : 0
-  );
-
-  $permisos[2] = array(
-    $_POST['gastosM'] = isset($_POST['gastosM']) ? $_POST['gastosM'] : 0,
-    $_POST['permisoG'] = isset($_POST['permisoG']) ? $_POST['permisoG'] : 0
-  );
-
-  $permisos[3] = array($_POST['productoM'] = isset($_POST['productoM']) ? $_POST['productoM'] : 0, $_POST['permisoP'] = isset($_POST['permisoP']) ? $_POST['permisoP'] : 0);
-  $permisos[4] = array($_POST['facturacionM'] = isset($_POST['facturacionM']) ? $_POST['facturacionM'] : 0, $_POST['permisoF'] = isset($_POST['permisoF']) ? $_POST['permisoF'] : 0);
-  $permisos[5] = array($_POST['docenteM'] = isset($_POST['docenteM']) ? $_POST['docenteM'] : 0, $_POST['permisoD'] = isset($_POST['permisoD']) ? $_POST['permisoD'] : 0);
-  $permisos[6] = array($_POST['usuarioM'] = isset($_POST['usuarioM']) ? $_POST['usuarioM'] : 0, $_POST['permisoU'] = isset($_POST['permisoU']) ? $_POST['permisoU'] : 0);
-  $permisos[7] = array($_POST['cuadreM'] = isset($_POST['cuadreM']) ? $_POST['cuadreM'] : 0, $_POST['permisoC'] = isset($_POST['permisoC']) ? $_POST['permisoP'] : 0);
-
-
-
-  // Permiso modificar
-
-
-
-
-
-  //  _log($permisos);
-
-  $permiso = new db('permisos');
-  $permiso->cargar();
-  foreach ($permiso->cargar() as $v) {
-    foreach ($permisos as $pm => $pmv) {
-      if ($pm == $v['id']) {
-       
-        $data_permiso = explode(',', $v['permiso']);
-        $data_mod = explode(',', $v['permiso']);
-        $indice = array_search($_POST['id'], $data_permiso);
-        $indiceDelete = array_search($_POST['id'], $data_mod);
-
-        if ($pmv[0] == 1) {
-
-          if ($indice !== false) {
-            $data_permiso = implode(',', $data_permiso);
-          } else {
-            $data_permiso[] = $_POST['id'];
-            $data_permiso = implode(',', $data_permiso);
-          }
-        } else {
-          unset($data_permiso[$indice]);
-          $data_permiso = implode(',', $data_permiso);
-        }
-
-        if ($pmv[1] == 1) {
-
-          if ($indiceDelete !== false) {
-            $data_mod = implode(',', $data_mod);
-          } else {
-            $data_mod[] = $_POST['id'];
-            $data_mod = implode(',', $data_mod);
-          }
-        } else {
-          unset($data_mod[$indiceDelete]);
-          $data_mod = implode(',', $data_mod);
-        }
-        (new db('permisos'))->insert(array(
-          'permiso' => $data_permiso,
-          'modificar' => $data_mod
-        ),$v['id']);
-      }
-    }
-  };
-
-
-  $db = new db('usuario');
-  $db->insert(array(
-    'nombre' =>  $_POST['nombre'],
-    'apellido' => $_POST['apellido'],
-    'estado' => $_POST['estado'],
-    'telefono' => $_POST['telefono'],
-    'direccion' => $_POST['direccion'],
-    'cedula' => $_POST['cedula'],
-    'cargo' => $_POST['cargo'],
-    'sueldo' => $_POST['salario'],
-    'estado' => $_POST['estado'],
-    'usuario' => $_POST['usuario'],
-    'usuario' => $_POST['usuario'],
-    'contrasena' => $_POST['contrasena'],
-    'foto' =>  $foto
-  ), $_POST['id'], 1);
-
-  echo "<script>  location.href = 'usuario.php'  </script>";
-
-};
-
-
-$db = new db('usuario');
-$est = [];
-$estDt = $db->cargar($_GET['id']);
-foreach ($estDt as $fl) {
-  $est[] = $fl;
+if($_POST){
+  if($_POST){
+    $id = $_POST['id'] > 0 ? $_POST['id'] :null;
+    $user = new db('users');
+    $user->insert([
+     'nombre'=>$_POST['nombre'],
+     'apellido'=>$_POST['apellido'],
+     'email'=>$_POST['email'],
+     'contrasena'=>$_POST['contrasena'],
+     'telefono'=>$_POST['telefono'],
+     'direccion'=>$_POST['direccion'],
+     'tipo'=>$_POST['tipo'],
+    ],$id);
+   header("location: usuario.php");
+ }
+  exit;
 }
 
-$data_permiso = (new db('permisos'))->cargar(0, array("FIND_IN_SET({$_GET['id']},permiso)"));
-foreach ($data_permiso as $fl) {
-  $permi[$fl['id']] = '';
-}
-
-$data_permiso = (new db('permisos'))->cargar(0, array("FIND_IN_SET({$_GET['id']},modificar)"));
-foreach ($data_permiso as $fl) {
-  $mod[$fl['id']] = '';
+if($_GET){
+ foreach ((new db('users'))->cargar($_GET['id']) as  $value) {
+  $est[] =$value;
+ } ;
 }
 
 ?>
@@ -156,28 +63,7 @@ foreach ($data_permiso as $fl) {
             </div>
           </div>
           <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-            <!-- <div class="nav-wrapper position-relative end-0">
-              <ul class="nav nav-pills nav-fill p-1" role="tablist">
-                <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
-                    <i class="ni ni-app"></i>
-                    <span class="ms-2">App</span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false">
-                    <i class="ni ni-email-83"></i>
-                    <span class="ms-2">Messages</span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false">
-                    <i class="ni ni-settings-gear-65"></i>
-                    <span class="ms-2">Settings</span>
-                  </a>
-                </li>
-              </ul>
-            </div> -->
+
           </div>
         </div>
       </div>
@@ -206,28 +92,15 @@ foreach ($data_permiso as $fl) {
                     </div>
                   </div>
 
+
                   <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="cedula" class="form-control-label">Cédula</label>
-                      <input class="form-control" id="cedula" name="cedula" type="text" value="<?= (isset($est[0]['cedula'])) ? $est[0]['cedula'] : '' ?>">
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label for="cedula" class="form-control-label">Usuario</label>
-                      <input class="form-control" id="cedula" name="usuario" type="text" value="<?= (isset($est[0]['usuario'])) ? $est[0]['usuario'] : '' ?>">
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
                     <div class="form-group">
                       <label for="cedula" class="form-control-label">Contraseña</label>
                       <input class="form-control" id="cedula" name="contrasena" type="text" value="<?= (isset($est[0]['contrasena'])) ? $est[0]['contrasena'] : '' ?>">
                     </div>
                   </div>
 
-                  <div class="col-md-6">
+                  <div class="col-md-12">
                     <div class="form-group">
                       <div class="form-group">
                         <label for="direccion" class="form-control-label">Dirección</label>
@@ -236,105 +109,33 @@ foreach ($data_permiso as $fl) {
                     </div>
                   </div>
 
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label for="foto" class="form-control-label">Foto</label>
-                      <input class="form-control" id="foto" type="file" name="foto">
-                    </div>
-                  </div>
 
-
-
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label for="salario" class="form-control-label">Salario</label>
-                      <input type="text" id="salario" class="form-control" name="salario" value="<?= isset($est[0]['sueldo']) ? $est[0]['sueldo'] : '' ?>">
-                    </div>
-                  </div>
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="form-group">
                       <label for="telefono" class="form-control-label">Número de telefono</label>
                       <input type="text" id="telefono" class="form-control" name="telefono" value="<?= isset($est[0]['telefono']) ? $est[0]['telefono'] : '' ?>">
                     </div>
                   </div>
 
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="form-group">
-                      <label for="cargo" class="form-control-label">Puesto</label>
-                      <input type="text" id="cargo" class="form-control" name="cargo" value="<?= isset($est[0]['cargo']) ? $est[0]['cargo'] : '' ?>">
+                      <label for="email" class="form-control-label">Correo</label>
+                      <input type="email" id="email" class="form-control" required name="email" value="<?= isset($est[0]['email']) ? $est[0]['email'] : '' ?>">
                     </div>
                   </div>
+             
 
 
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="form-group">
-                      <label for="Estado" class="form-control-label">Estado</label>
-                      <select name="estado" id="Estado" class="form-control">
-                        <option <?= (isset($est[0]['estado']) &&  $est[0]['estado'] == 1) ? 'selected' : '' ?> value="1">Activo</option>
-                        <option <?= (isset($est[0]['estado']) &&  $est[0]['estado'] == 2) ? 'selected' : '' ?> value="2">Inactivo</option>
+                      <label for="Estado" class="form-control-label">Tipo</label>
+                      <select name="tipo" id="tipo" class="form-control">
+                        <option <?= (isset($est[0]['tipo']) &&  $est[0]['tipo'] == 1) ? 'selected' : '' ?> value="1">Cliente</option>
+                        <option <?= (isset($est[0]['tipo']) &&  $est[0]['tipo'] == 2) ? 'selected' : '' ?> value="2">Admin</option>
                       </select>
                     </div>
                   </div>
-                  <h3>Permisos de usuarios</h3>
-                  <br>
-                  <hr class="horizontal dark">
-                  <div class="col-md-6">
-                    <h4 class="">Visualizar</h4>
-                    <div class="form-check">
-
-                      <input class="form-check-input" type="checkbox" name="usuarioM" <?= isset($permi[6])  ? "checked" : '' ?> value="1">
-                      <label class="custom-control-label" for="customCheck1">Usuarios</label>
-                      <br>
-                      <input class="form-check-input" type="checkbox" name="gastosM" <?= isset($permi[2]) ? "checked" : '' ?> value="1">
-                      <label class="custom-control-label" for="customCheck1">Gastos</label>
-                      <br>
-                      <input class="form-check-input" type="checkbox" name="estudianteM" <?= isset($permi[1]) ? "checked" : '' ?> value="1">
-                      <label class="custom-control-label" for="customCheck1">Estudiante</label>
-                      <br>
-                      <input class="form-check-input" type="checkbox" name="facturacionM" <?= isset($permi[4]) ? "checked" : '' ?> value="1">
-                      <label class="custom-control-label" for="customCheck1">Facturación</label>
-                      <br>
-                      <input class="form-check-input" type="checkbox" name="docenteM" <?= isset($permi[5])  ? "checked" : '' ?> value="1">
-                      <label class="custom-control-label" for="customCheck1">Docente</label>
-                      <br>
-                      <input class="form-check-input" type="checkbox" name="productoM" <?= isset($permi[3]) ? "checked" : '' ?> value="1">
-                      <label class="custom-control-label" for="customCheck1">Productos</label>
-                      <br>
-                      <input class="form-check-input" type="checkbox" name="cuadreM" <?= isset($permi[7]) ? "checked" : '' ?> value="1">
-                      <label class="custom-control-label" for="customCheck1">Cuadre</label>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <h4 class="">Creación + edición</h4>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="permisoU" <?= isset($mod[6]) ? "checked" : '' ?> value="1" id="fcustomCheck1">
-                      <label class="custom-control-label">Crear y editar</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="permisoG" <?= isset($mod[2]) ? "checked" : '' ?> value="1" id="fcustomCheck1">
-                      <label class="custom-control-label">Crear y editar</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="permisoE" <?= isset($mod[1]) ? "checked" : '' ?> value="1" id="fcustomCheck1">
-                      <label class="custom-control-label">Crear y editar</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="permisoF" <?= isset($mod[4]) ? "checked" : '' ?> value="1" id="fcustomCheck1">
-                      <label class="custom-control-label">Crear y editar</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="permisoD" <?= isset($mod[5]) ? "checked" : '' ?> value="1" id="fcustomCheck1">
-                      <label class="custom-control-label">Crear y editar</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="permisoP" <?= isset($mod[3]) ? "checked" : '' ?> value="1" id="fcustomCheck1">
-                      <label class="custom-control-label">Crear y editar</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="permisoC" <?= isset($mod[7]) ? "checked" : '' ?> value="1" id="fcustomCheck1">
-                      <label class="custom-control-label">Crear y editar</label>
-                    </div>
-                  </div>
+         
                   <br>
                   <div class="col-6 mt-3">
                     <input type="submit" class="btn btn-primary btn-block w-100" value="Guardar">
@@ -354,7 +155,7 @@ foreach ($data_permiso as $fl) {
                             <div class="py-3 text-center">
                               <i class="ni ni-bell-55 ni-3x"></i>
                               <h4 class="text-gradient text-danger mt-4">¡Deberías leer esto!</h4>
-                              <p>¿Estás seguro de que deseas eliminar permanentemente a este estudiante? Esta acción no se puede deshacer.</p>
+                              <p>¿Estás seguro de que deseas eliminar permanentemente a este usuario? Esta acción no se puede deshacer.</p>
                             </div>
                           </div>
                           <div class="modal-footer">
@@ -400,8 +201,8 @@ foreach ($data_permiso as $fl) {
 
     function eliminarEstudiante(id) {
       data = new FormData();
-      data.append('docente', id);
-      // console.log(data.get('id_eliminar'));
+      data.append('users', id);
+
       fetch('../controller/eliminar_est.php', {
           method: 'POST',
           body: data
@@ -409,7 +210,7 @@ foreach ($data_permiso as $fl) {
         .then(response => response.text())
         .then(result => {
           console.log(result);
-          location.href = 'docente.php';
+          location.href = 'usuario.php';
         })
     }
   </script>

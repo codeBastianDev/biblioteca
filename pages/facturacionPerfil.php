@@ -21,7 +21,7 @@ $conexion = new Conexion();
 $conexion->conexion();
 
 // Obtener el ID del usuario
-$usuario_id = $_SESSION['usuario_id'] ?? $_GET['usuario_id'] ?? 1;
+$usuario_id = $_SESSION['id'] ?? $_GET['id'] ?? 1;
 
 // Consultar información del usuario
 $sql = "SELECT * FROM users WHERE id = ?";

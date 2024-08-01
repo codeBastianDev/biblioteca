@@ -63,16 +63,15 @@ $modulo = "Listado de libros";
           <button class="btn btn-sm bg-gradient-primary my-1 me-1">Search</button>
         </div>
       </div>
-<<<<<<< HEAD
+
       
     <div class="row" id="books-container">
 
 
-=======
+
       <div class="row" id="books-container">
         
-     
->>>>>>> a3691f645acd9823741219d491356777eee077a9
+
       </div>
     </div>
   </main>
@@ -110,6 +109,7 @@ $modulo = "Listado de libros";
 
     fetch('../controller/list_libro.php').then(res => res.json()).then(res =>{
       res.forEach(e=>{
+        button = e.disponibilidad == 1 ?`<a href='facturacionPerfil.php?libro=${e.id}' class='btn btn-primary mt-auto rent-btn'>Alquilar</a>` : "<button class='btn btn-danger'>No disponible</button>";
         document.getElementById('books-container').innerHTML += (`<div class='col-md-4 lista-libro'>
                                                             <div class='card mb-4' data-id='1'>
                                                               <img src='${e.imagen}' class='card-img-top' alt='Portada del libro 1'>
@@ -122,7 +122,7 @@ $modulo = "Listado de libros";
                                                                 </p>
                                                                 <p class='card-text'>Descripción: ${e.descripcion ?? ""}</p>
                                                                 <p class='card-text'>Publicado: ${e.anio_publicacion ?? ""}</p>
-                                                                <button class='btn btn-primary mt-auto rent-btn'>Reservar</button>
+                                                                ${button}
                                                               </div>
                                                             </div>
                                                           </div>`)

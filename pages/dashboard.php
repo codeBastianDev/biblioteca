@@ -15,8 +15,8 @@ $reservations = (new db('books b'))
         ['categories c', 'reservations r'],
         ['0', 2],
         ['c.id = b.categoria_id', 'b.id = r.libro_id'],
-        ["usuario_id  = {$_SESSION['id']}"],
-        ['b.*', 'c.nombre categoria', 'r.fecha_reserva reserva', 'r.fecha_expiracion expiracion','r.id id_prestamo'],
+        ["usuario_id  = {$_SESSION['id']}", "r.estado = 1"],
+        ['b.*', 'c.nombre categoria', 'r.fecha_reserva reserva', 'r.fecha_expiracion expiracion', 'r.id id_prestamo'],
         "GROUP By b.id"
     );
 
@@ -25,12 +25,12 @@ $libro = implode(',', $libro);
 $pdo = new PDO('mysql:host=localhost;dbname=biblioteca', 'root', '');
 
 
-$query = $pdo->query("SELECT COUNT(*) as total_reservations FROM reservations WHERE usuario_id = '{$_SESSION['id']}'");
+$query = $pdo->query("SELECT COUNT(*) as total_reservations FROM reservations WHERE usuario_id = '{$_SESSION['id']}' and estado = 1");
 $reservationCount = $query->fetch(PDO::FETCH_ASSOC)['total_reservations'];
 
 $query = $pdo->query("SELECT usuario_id, fecha_reserva, fecha_expiracion FROM reservations WHERE fecha_expiracion IS NULL");
 
-$query = $pdo->query("SELECT COUNT(*) as overdue_count FROM reservations WHERE usuario_id = '{$_SESSION['id']}' and fecha_expiracion < CURDATE()");
+$query = $pdo->query("SELECT COUNT(*) as overdue_count FROM reservations WHERE usuario_id = '{$_SESSION['id']}' and fecha_expiracion < CURDATE()  and estado = 1");
 $overdueCount = $query->fetch(PDO::FETCH_ASSOC)['overdue_count'];
 
 $usuarios = [];
@@ -64,7 +64,8 @@ $usuarios = [];
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                    <div
+                                        class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
                                         <i class="ni ni-books text-lg opacity-10" aria-hidden="true"></i>
                                     </div>
                                 </div>
@@ -84,13 +85,15 @@ $usuarios = [];
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                    <div
+                                        class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
                                         <i class="ni ni-time-alarm text-lg opacity-10" aria-hidden="true"></i>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="numbers">
-                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Devoluciones Pendientes</p>
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Devoluciones Pendientes
+                                        </p>
                                         <h5 class="font-weight-bolder"><?= $overdueCount ?></h5>
                                         <p class="mb-0 text-sm">Última actualización: hoy</p>
                                     </div>
@@ -120,26 +123,30 @@ $usuarios = [];
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($reservations as $reservation):?>
+                                    <?php foreach ($reservations as $reservation): ?>
                                         <tr>
-                                        <td>
-                                            <div class="d-flex px-2 py-1">
-                                                <div>
-                                                    <img src="<?=$reservation['imagen']?>" class="avatar avatar-sm me-3">
+                                            <td>
+                                                <div class="d-flex px-2 py-1">
+                                                    <div>
+                                                        <img src="<?= $reservation['imagen'] ?>"
+                                                            class="avatar avatar-sm me-3">
+                                                    </div>
+                                                    <div class="d-flex flex-column justify-content-center">
+                                                        <h6 class="mb-0 text-xs"><?= $reservation['titulo'] ?></h6>
+                                                        <p class="text-xs text-secondary mb-0"><?= $reservation['autor'] ?>
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-xs"><?=$reservation['titulo']?></h6>
-                                                    <p class="text-xs text-secondary mb-0"><?=$reservation['autor']?></p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p class="text-xs font-weight-bold mb-0"><?=$reservation['reserva']?></p>
-                                        </td>
-                                        <td class="align-middle text-center text-sm">
-                                            <p class="text-xs font-weight-bold mb-0"><?=$reservation['expiracion']?></p>
-                                        </td>
-                                        <td><button class="btn btn-primary" onclick="entregar(<?=$reservation['id_prestamo']?>,<?=$reservation['id']?>)">Entregar libro</button></td>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs font-weight-bold mb-0"><?= $reservation['reserva'] ?></p>
+                                            </td>
+                                            <td class="align-middle text-center text-sm">
+                                                <p class="text-xs font-weight-bold mb-0"><?= $reservation['expiracion'] ?></p>
+                                            </td>
+                                            <td><button class="btn btn-primary"
+                                                    onclick="entregar(<?= $reservation['id_prestamo'] ?>,<?= $reservation['id'] ?>)">Entregar
+                                                    libro</button></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -162,20 +169,23 @@ $usuarios = [];
             var options = { damping: '0.5' }
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
-      
 
-            function entregar(id,libro){
-                confing ={
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body:JSON.stringify({prestamo:id,libro:libro})
-                }
-                fetch("../controller/fin_libro.php",confing,e =>{
-                    console.log(e);
-                })
+
+        function entregar(id, libro) {
+            confing = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ prestamo: id, libro: libro })
             }
+            fetch("../controller/fin_libro.php", confing, e => {
+              
+            })
+            setTimeout(() => {
+                    location.reload()
+                }, 100)
+        }
     </script>
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
